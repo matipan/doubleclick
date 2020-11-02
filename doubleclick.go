@@ -35,7 +35,7 @@ func ParseKeys(ic, ec []byte) (icKey []byte, ecKey []byte, err error) {
 
 // ErrInvalidPrice is the error returned when the price parsed
 // by DecryptPrice is not correct.
-var ErrInvalidPrice = errors.New("adx price is invalid")
+var ErrInvalidPrice = errors.New("price is invalid")
 
 // DecryptPrice decrypts the price with google's doubleclick cryptography encoding.
 // encPrice is an unpadded web-safe base64 encoded string according to RFC 3548.
