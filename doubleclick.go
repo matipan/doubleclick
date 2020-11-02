@@ -33,8 +33,8 @@ func ParseKeys(ic, ec []byte) (icKey []byte, ecKey []byte, err error) {
 	return icKey, ecKey, nil
 }
 
-// ErrAdxInvalidPrice is the error returned when the price parsed
-// by decryptAdxPrice is not correct.
+// ErrInvalidPrice is the error returned when the price parsed
+// by DecryptPrice is not correct.
 var ErrInvalidPrice = errors.New("adx price is invalid")
 
 // DecryptPrice decrypts the price with google's doubleclick cryptography encoding.
@@ -42,7 +42,7 @@ var ErrInvalidPrice = errors.New("adx price is invalid")
 // https://developers.google.com/authorized-buyers/rtb/response-guide/decrypt-price
 func DecryptPrice(icKey, ecKey, encPrice []byte) (uint64, error) {
 	if len(icKey) == 0 || len(ecKey) == 0 {
-		panic("AdX encryption and integrity keys have not been initialised")
+		return 0, errors.New("encryption and integrity keys are required")
 	}
 
 	if len(encPrice) != 38 {
