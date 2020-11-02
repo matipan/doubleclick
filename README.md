@@ -12,7 +12,7 @@ if err != {
 	log.Fatal(err)
 }
 
-price, err := DecryptPrice(icKey, ecKey, test.price)
+price, err := DecryptPrice(icKey, ecKey, []byte("YWJjMTIzZGVmNDU2Z2hpN7fhCuPemC32prpWWw"))
 if err != nil {
 	log.Fatal(err)
 }
