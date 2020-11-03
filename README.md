@@ -1,5 +1,6 @@
 # Doubleclick
 
+![Go](https://github.com/matipan/doubleclick/workflows/Go/badge.svg?event=push)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/matipan/doubleclick)](https://pkg.go.dev/github.com/matipan/doubleclick)
 
 This package implements the decryption of prices according to Google's OpenRTB-DoubleClick cryptography: https://developers.google.com/authorized-buyers/rtb/response-guide/decrypt-price.
