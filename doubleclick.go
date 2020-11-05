@@ -102,7 +102,7 @@ func DecryptPrice(icKey, ecKey, encPrice []byte) (uint64, error) {
 	}
 
 	if len(encPrice) != 38 {
-		return 0, fmt.Errorf("%w: invalid length, expected 28 got %d", ErrInvalidPrice, len(encPrice))
+		return 0, fmt.Errorf("%w: invalid encoded price length, expected 38 got %d", ErrInvalidPrice, len(encPrice))
 	}
 
 	dprice := make([]byte, base64.RawURLEncoding.DecodedLen(len(encPrice)))
