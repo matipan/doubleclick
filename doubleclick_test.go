@@ -87,7 +87,53 @@ func TestEncryptPrice(t *testing.T) {
 	}
 }
 
-func TestDecryptxPrice(t *testing.T) {
+func BenchmarkEncryptPrice(b *testing.B) {
+	benches := []struct {
+		name         string
+		icKey, ecKey []byte
+		iv           []byte
+		price        uint64
+	}{
+		{
+			name:  "integrity key is invalid",
+			ecKey: []byte{1, 2, 3},
+			iv:    []byte{1, 2, 3},
+			price: 1,
+		},
+		{
+			name:  "encryption key is invalid",
+			icKey: []byte{1, 2, 3},
+			iv:    []byte{1, 2, 3},
+			price: 1,
+		},
+		{
+			name:  "initialization vector is invalid",
+			icKey: []byte{1, 2, 3},
+			ecKey: []byte{1, 2, 3},
+			price: 1,
+		},
+		{
+			name:  "price is generated successfully",
+			icKey: sampleIcKey,
+			ecKey: sampleEcKey,
+			iv:    []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
+		},
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for _, bench := range benches {
+		b.Run(bench.name, func(b *testing.B) {
+			b.RunParallel(func(pb *testing.PB) {
+				for pb.Next() {
+					_, _ = EncryptPrice(bench.icKey, bench.ecKey, bench.iv, bench.price)
+				}
+			})
+		})
+	}
+}
+
+func TestDecryptPrice(t *testing.T) {
 	cases := []struct {
 		name          string
 		price         []byte
@@ -149,6 +195,63 @@ func TestDecryptxPrice(t *testing.T) {
 			price, err := DecryptPrice(test.icKey, test.ecKey, test.price)
 			is.Equal(test.expectedPrice, price)
 			is.True(errors.Is(err, test.expectedErr))
+		})
+	}
+}
+
+func BenchmarkDecryptPrice(b *testing.B) {
+	benches := []struct {
+		name         string
+		price        []byte
+		icKey, ecKey []byte
+	}{
+		{
+			name:  "price is 1900",
+			price: []byte("YWJjMTIzZGVmNDU2Z2hpN7fhCuPemCAWJRxOgA"),
+			icKey: sampleIcKey,
+			ecKey: sampleEcKey,
+		},
+		{
+			name:  "signature in price is not valid",
+			price: []byte("YWJjMTIzZGVmNDU2Z2hpN7fhCuPemCAWJRxOlA"),
+			icKey: sampleIcKey,
+			ecKey: sampleEcKey,
+		},
+		{
+			name:  "price has invalid length",
+			price: []byte{1, 2, 3},
+			icKey: sampleIcKey,
+			ecKey: sampleEcKey,
+		},
+		{
+			name:  "price is invalid base64",
+			price: []byte("Y!YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"),
+			icKey: sampleIcKey,
+			ecKey: sampleEcKey,
+		},
+		{
+			name:  "integrity key is empty",
+			price: []byte("test"),
+			icKey: nil,
+			ecKey: sampleEcKey,
+		},
+		{
+			name:  "encryption key is empty",
+			price: []byte("test"),
+			icKey: nil,
+			ecKey: sampleEcKey,
+		},
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for _, bench := range benches {
+		b.Run(bench.name, func(b *testing.B) {
+			b.RunParallel(func(pb *testing.PB) {
+				for pb.Next() {
+					_, _ = DecryptPrice(bench.icKey, bench.ecKey, bench.price)
+				}
+			})
 		})
 	}
 }
